@@ -161,10 +161,314 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Max's BigHouse">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/" class="post-title-link" itemprop="url">第五章-创建高性能的索引</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-03 10:08:55" itemprop="dateCreated datePublished" datetime="2020-09-03T10:08:55+08:00">2020-09-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-19 22:58:58" itemprop="dateModified" datetime="2021-02-19T22:58:58+08:00">2021-02-19</time>
+              </span>
+
+          
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="索引基础"><a href="#索引基础" class="headerlink" title="索引基础"></a>索引基础</h1><h2 id="索引的类型"><a href="#索引的类型" class="headerlink" title="索引的类型"></a>索引的类型</h2><p>索引在存储引擎层实现</p>
+<h3 id="B-Tree索引"><a href="#B-Tree索引" class="headerlink" title="B-Tree索引"></a>B-Tree索引</h3><p>单列索引:</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200903234444724.png" alt="image-20200903234444724"></p>
+<p>多列索引:</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200903234519761.png" alt="image-20200903234519761"></p>
+<p>索引查询原则:</p>
+<ul>
+<li>最左前缀匹配, 从索引定义的最左列开始, 可使用全部或部分列的索引</li>
+<li>如果某个列有范围查询, 则其右边的列都无法使用索引</li>
+</ul>
+<h3 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h3><p>只有Memory引擎支持哈希索引, 也是Memory的默认索引类型.</p>
+<h4 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h4><ul>
+<li>只包含索引值和行指针, 不能用索引值避免读取行</li>
+<li>无法用于排序</li>
+<li>哈希索引对所有索引列进行hash, 必须使用部分列查索引</li>
+<li>只支持=、IN()、&lt;=&gt;, 不支持范围查询</li>
+<li>冲突小时查询很快, 冲突严重时查询和删除很慢</li>
+</ul>
+<p>InnoDB在某些索引值操作频繁时会自发的在B-Tree索引上再创建一个哈希索引 (只是将key进行hash缩短键值, 还是使用B-Tree查找)</p>
+<h4 id="不支持哈希索引的存储引擎伪hash索引的实现"><a href="#不支持哈希索引的存储引擎伪hash索引的实现" class="headerlink" title="不支持哈希索引的存储引擎伪hash索引的实现"></a>不支持哈希索引的存储引擎伪hash索引的实现</h4><p>如 (mysql会选择url_crc列):     为什么将长键转为短键能缩短搜索空间???</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200906234559019.png" alt="image-20200906234559019"></p>
+<p>对于url_crc列可定义触发器进行维护</p>
+<p>WHERE条件需要包含原来的列, 用于处理哈希冲突</p>
+<h3 id="空间数据索引-R-Tree"><a href="#空间数据索引-R-Tree" class="headerlink" title="空间数据索引 (R-Tree)"></a>空间数据索引 (R-Tree)</h3><p>用于地理数据索引, 不需要前缀查询, 可以利用任意维度来查询</p>
+<p>MyISAM支持</p>
+<p>PostgreSQL和PostGIS数据库做的较好</p>
+<h3 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h3><p>对全文的关键词匹配, 和基于值匹配的B-Tree索引不冲突</p>
+<p>适用于MATCH AGAINST操作</p>
+<h1 id="索引的优点"><a href="#索引的优点" class="headerlink" title="索引的优点"></a>索引的优点</h1><p>三个优点:</p>
+<ul>
+<li>减少扫描的数据量</li>
+<li>避免排序和临时表</li>
+<li>随机IO变为顺序IO</li>
+</ul>
+<p>tips:</p>
+<ul>
+<li>小表全盘扫更高效</li>
+<li>中到大型的表用索引很有效</li>
+<li>特大表见索引代价高, 考虑分区</li>
+<li>表的数量太多, 考虑元数据信息表</li>
+</ul>
+<h1 id="高性能的索引策略"><a href="#高性能的索引策略" class="headerlink" title="高性能的索引策略"></a>高性能的索引策略</h1><h3 id="独立的列"><a href="#独立的列" class="headerlink" title="独立的列"></a>独立的列</h3><p>索引列不能是表达式的一部分,  也不能是函数的参数</p>
+<h3 id="前缀索引和索引选择性"><a href="#前缀索引和索引选择性" class="headerlink" title="前缀索引和索引选择性"></a>前缀索引和索引选择性</h3><p>完整列的选择性: SELECT COUNT(DISTINCT city)/COUNT(*) FROM sakila.city_demo;</p>
+<p>通常前缀索引的长度应尽量接近完整列的选择性</p>
+<p>此外还需要考虑前缀索引每个类型的区分性</p>
+<p>前缀索引无法做ORDER BY和GROUP BY</p>
+<p>不需要修改表结构</p>
+<p>后缀索引可以将字符串反转存储后建立前缀索引 (借助触发器自动触发)</p>
+<p>前缀索引创建: ALTER TABLE sakila.city_demo ADD KEY (city(7));</p>
+<h3 id="多列索引"><a href="#多列索引" class="headerlink" title="多列索引"></a>多列索引</h3><p>多个单列的索引在查询条件中使用时, MySQL可能会对OR和AND条件使用UNION和INTERSECTION优化</p>
+<p>如下使用了actor_id和film_id两个单列索引, 使用了两个索引扫描的联合:</p>
+<p>EXPLAIN SELECT film_id, actor_id FROM sakila.film_actor WHERE actor_id=1 OR film_id=1 \G</p>
+<p>Tips:</p>
+<ul>
+<li>INTERSECTION的存在通常意味着需要联合索引</li>
+<li>OR操作往往会合并返回大量数据, 占用大量CPU和内存资源</li>
+<li>优化器更在意随机页面读取, 通常会低估查询成本. 使用多列索引消耗更多CPU和内存资源且可能影响并发性. 通常不如直接改写成UNION方式更好</li>
+<li>optimizer_switch可便宜关闭索引合并功能</li>
+<li>IGNORE INDEX提示优化器忽略掉某些索引</li>
+</ul>
+<h3 id="选择合适的索引列顺序"><a href="#选择合适的索引列顺序" class="headerlink" title="选择合适的索引列顺序"></a>选择合适的索引列顺序</h3><p>不考虑排序和分组时, 通常考虑将选择性最高的列放在前面</p>
+<p>通过多个列的选择性考虑联合索引的顺序 (经验法则):</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200907233137554.png" alt="image-20200907233137554"></p>
+<h3 id="聚簇索引"><a href="#聚簇索引" class="headerlink" title="聚簇索引"></a>聚簇索引</h3><p>数据行和键值紧凑的存储在一起, 一个表只能有一个聚簇索引</p>
+<p>InnoDB的聚簇索引:</p>
+<ul>
+<li>默认主键为聚簇索引</li>
+<li>如果没有主键, 会选择一个唯一的非空索引</li>
+<li>如果没有这样的索引, 会隐式定义一个逐渐作为聚簇索引</li>
+</ul>
+<p>InnoDB只聚集同一个页面的记录, 包含相邻键值的页面可能相聚甚远</p>
+<p>优点:</p>
+<ul>
+<li>相关的数据存储在一起. 如根据用户ID为聚簇索引, 该用户的所有邮件只用很少磁盘IO</li>
+<li>数据和索引一起存储, 查找快</li>
+<li>使用覆盖索引扫描的查询可以直接使用页节点中的主键值 ???</li>
+</ul>
+<p>缺点:</p>
+<ul>
+<li>数据量少能放在内存中时, 聚簇索引没什么优势</li>
+<li>如果不是按索引顺序插入数据, 可以用OPTIMIZE TABLE重新组织一下表</li>
+<li>更新聚簇索引代价高, 被更新的行会被移动到新的位置</li>
+<li>插入新行或更新主键会导致“页分裂”问题, 占用更多磁盘</li>
+<li>行稀疏或数据存储不连续时, 全表扫描慢</li>
+<li>二级索引会存储主键列, 且需要两次查找 (至少)</li>
+</ul>
+<p>InnoDB自适应的哈希索引能减少二级索引的多次查找???</p>
+<h4 id="InnoDB和MyISAM的数据分布对比"><a href="#InnoDB和MyISAM的数据分布对比" class="headerlink" title="InnoDB和MyISAM的数据分布对比"></a>InnoDB和MyISAM的数据分布对比</h4><p>InnoDB主键为聚簇索引, 其他索引为存储主键的二级索引</p>
+<p>MyISAM中主键索引和二级索引都存储数据的行号</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200909002342125.png" alt="image-20200909002342125"></p>
+<h4 id="在InnoDB表中按主键顺序插入行"><a href="#在InnoDB表中按主键顺序插入行" class="headerlink" title="在InnoDB表中按主键顺序插入行"></a>在InnoDB表中按主键顺序插入行</h4><p>向聚簇索引顺序插入行:</p>
+<ul>
+<li>新插入的row被顺序写入到磁盘</li>
+<li>高并发情况下造成间隙锁竞争</li>
+<li>高并发情况下AUTO_INCREMENT锁的影响, 可以调节innodb_autoinc_lock_mode参数改善(ref: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/JiangLe/p/6362770.html">https://www.cnblogs.com/JiangLe/p/6362770.html</a>)</li>
+</ul>
+<p>向基簇索引插入乱序的行:</p>
+<ul>
+<li>目标页可能不在磁盘中, 加载会造成许多随机IO</li>
+<li>乱序写入有频繁页分裂, 分配新的空间, 一次插入最少需要修改三个页</li>
+<li>页分裂使得页变得稀疏, 存在碎片</li>
+</ul>
+<h4 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h4><p>MySQL利用索引列直接获取列数据, 这样就不再需要回表查询读取数据行.</p>
+<p>EXPLAIN的EXTRA: using index为使用了覆盖索引</p>
+<p>优势:</p>
+<ul>
+<li>索引比数据行小, 只读取索引能大大减少数据访问量</li>
+<li>索引按顺序存储 (至少单页内), 随机IO比读取数据行少</li>
+<li>一些存储引擎如MyISAM只缓存索引, 数据则依赖操作系统缓存, 每次访问数据需要一次系统调用, 开销大</li>
+<li>InnoDB二级索引中保存了主键值, 可以覆盖对于主键的查询</li>
+</ul>
+<p>MySQL能在索引中做最左前缀的LIKE比较, 但对于%开头的比较就无法利用索引</p>
+<h4 id="使用索引扫描做排序"><a href="#使用索引扫描做排序" class="headerlink" title="使用索引扫描做排序"></a>使用索引扫描做排序</h4><p>使用索引排序的情况:</p>
+<ul>
+<li>索引的列顺序和ORDER BY子句的顺序完全一致, 并且所有列的排序方向都一样时</li>
+<li>ORDER BY子句要求和WHERE的要求一样, 满足索引最左前缀要求. 前导列在WHERE或JOIN子句中指定了常量时, 可以不满足最左前缀要求</li>
+<li>需要多表关联时, 只有当ORDER BY子句引用的字段都为第一个表时, 才能用索引做排序. (依赖优化器使用哪张表作为第一张表)</li>
+</ul>
+<p>EXPLAIN的type: index为使用索引做排序</p>
+<p>tips:</p>
+<ul>
+<li>如果不同列需要按不同方向做排序, 可以将存储该列值进行反转串或相反数</li>
+</ul>
+<h4 id="压缩-前缀压缩-索引"><a href="#压缩-前缀压缩-索引" class="headerlink" title="压缩(前缀压缩)索引"></a>压缩(前缀压缩)索引</h4><p>MyISAM使用前缀压缩来减少索引大小, 让更多的索引可以放入内存. 默认值只压缩字符串, 通过参数设置页可以对整数做压缩</p>
+<p>MyISAM对行指针也采用类似的前缀压缩方式</p>
+<p>索引压缩的方法: </p>
+<ul>
+<li>先完全保存索引块中第一个值, 然后将其他值和第一个值进行比较得到相同前缀的字节数和剩余的不同后缀部分</li>
+<li>如: 索引快第一个值为“perform”, 第二个值是“performace”, 第二个值采用“7,ance”这样的形式</li>
+</ul>
+<p>优劣:</p>
+<ul>
+<li>IO密集型应用, 对有些查询带来的好处比成本多很多</li>
+<li>因为后一个索引值依赖前一个值, 所以ORDER BY DESC性能不好</li>
+<li>CPU密集型应用, 因为需要随机查找, 压缩索引在索引块内的查找是顺序扫描不是二分, 索引性能慢</li>
+</ul>
+<h4 id="冗余和重复索引"><a href="#冗余和重复索引" class="headerlink" title="冗余和重复索引"></a>冗余和重复索引</h4><p>尽量避免冗余和重复索引, 但由于联合索引占空间大, 所以有时为了加速不同query查询会存在冗余索引</p>
+<p>为什么前缀压缩的MyISAM使用索引(state_id, city, address)的情况下该语句查询效率比单列索引下降很多呢, 而InnoDB不会???</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200911002700063.png" alt="image-20200911002700063"></p>
+<p>分析表中冗余索引和重复索引的方法:</p>
+<ul>
+<li>复杂的访问INFORMATION_SCHEMA表的查询</li>
+<li>Sholomi Noach的common_schema中的一些视图定位, commom_schema是一系列安装到服务器上常用的存储和试图</li>
+<li>Percona Toolkit中的pt-duplicate-key-checker工具来检查</li>
+</ul>
+<h4 id="未使用的索引"><a href="#未使用的索引" class="headerlink" title="未使用的索引"></a>未使用的索引</h4><p>不使用索引的查询方式:</p>
+<ul>
+<li>Percona Server或MariaDB先打开userstates服务器变量 (默认关闭), 查询INFORMATION_SCHEMA.INDEX_STATISTICS查询每个索引的使用频率</li>
+<li>Percona Toolkit中的pt-index-usage分析未使用的索引, 并定位质量差的查询, 结果可卸乳MySQL的表中</li>
+</ul>
+<h4 id="索引和锁"><a href="#索引和锁" class="headerlink" title="索引和锁"></a>索引和锁</h4><p>查询会先通过存储引擎索引过滤返回, 对于索引无法过滤的数据, 存储引擎返回后通过MySQL服务器WHERE子句过滤</p>
+<p>如果不使用索引, InnoDB会做全表扫描锁住所有的行</p>
+<p>如下例子InnoDB锁定1<del>4行, 但实际上只返回了2</del>4</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200915235347340.png" alt="image-20200915235347340"></p>
+<p>InnoDB二级索引使用共享锁, 主键索引使用排他锁. 所以获取写锁的时候无法使用覆盖索引</p>
+<h2 id="索引案例学习"><a href="#索引案例学习" class="headerlink" title="索引案例学习"></a>索引案例学习</h2><h3 id="支持多种过滤条件"><a href="#支持多种过滤条件" class="headerlink" title="支持多种过滤条件"></a>支持多种过滤条件</h3><p>为了更多使用索引, 创建索引时范围查询应该尽量放在后面, 比如age</p>
+<p>有些选择性低但又经常使用到的列可以放在多列索引前面, 如sex、country, 即使在不需要条件SEX的时候也可以通过SEX IN (‘m’, ‘f’) 来使用该多列索引</p>
+<p>IN查询能使用索引, MySQL优化器会转化成=进行组合, 如下查询就有4x3x2=24种组合</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200916102912749.png" alt="image-20200916102912749"></p>
+<h3 id="避免多个范围条件"><a href="#避免多个范围条件" class="headerlink" title="避免多个范围条件"></a>避免多个范围条件</h3><p>范围查询会使得右侧的索引失效, 所以一个查询种范围查询应该尽量少.</p>
+<p>可以考虑如何优化查询替代存在多个范围条件的问题, 如下查询可以通过新增active列替代过去几周上线过的用户条件(last_online), 该字段通过定时任务去维护</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200917002440338.png" alt="image-20200917002440338"></p>
+<p>tips: EXPLAIN不能分辨范围查询和IN查询, 都会显示type为range, 但是这两种查询的访问效率是不同的</p>
+<h3 id="优化排序"><a href="#优化排序" class="headerlink" title="优化排序"></a>优化排序</h3><p>数据集大的时候使用文件排序是很慢的</p>
+<p>即使有索引(sex, rating), limit偏移很大的查询也会很慢, 案例:</p>
+<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200917003431012.png" alt="image-20200917003431012"></p>
+<p>优化方法:</p>
+<ul>
+<li>反范式化、预先计算、缓存</li>
+<li>限制翻页数量</li>
+<li>延迟关联: 使用覆盖索引查询主键, 再根据这些主键获取需要的行<ul>
+<li><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200917003658355.png" alt="image-20200917003658355"></li>
+<li>不懂这里为啥原查询不会直接先查主键再回表???</li>
+</ul>
+</li>
+</ul>
+<h2 id="维护索引和表"><a href="#维护索引和表" class="headerlink" title="维护索引和表"></a>维护索引和表</h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/09/01/test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Max's BigHouse">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/01/test/" class="post-title-link" itemprop="url">test</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-09-01 01:07:38 / 修改时间：01:16:57" itemprop="dateCreated datePublished" datetime="2020-09-01T01:07:38+08:00">2020-09-01</time>
+            </span>
+
+          
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="/image-20200901011436208.png" alt="image-20200901011436208"></p>
+<p><img src="/image-20200901011636497.png" alt="image-20200901011636497"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/08/31/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -370,7 +674,7 @@
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/08/31/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -493,7 +797,7 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Max"
-      src="/images/avatar.gif">
+      src="/images/avatar.png">
   <p class="site-author-name" itemprop="name">Max</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -502,7 +806,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

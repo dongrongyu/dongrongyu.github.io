@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dongrongyu.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="数据库123456struct redisServer &amp;#123;  &#x2F;&#x2F; ...  redisDb *db;   &#x2F;&#x2F; 一个数组, 保存服务器中的所有数据库  int dbnum;     &#x2F;&#x2F; 服务器的数据库数量, 默认16. 初始化时, 根据创建dbnum个数据库  &#x2F;&#x2F; ...&amp;#125; 12345typedef struct redisClient &amp;#123;	&#x2F;&#x2F; ...	red">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis设计与实现-单机数据库的实现">
+<meta property="og:url" content="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Max&#39;s BigHouse">
+<meta property="og:description" content="数据库123456struct redisServer &amp;#123;  &#x2F;&#x2F; ...  redisDb *db;   &#x2F;&#x2F; 一个数组, 保存服务器中的所有数据库  int dbnum;     &#x2F;&#x2F; 服务器的数据库数量, 默认16. 初始化时, 根据创建dbnum个数据库  &#x2F;&#x2F; ...&amp;#125; 12345typedef struct redisClient &amp;#123;	&#x2F;&#x2F; ...	red">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005024994.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005612084.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228011531391.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228160950463.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163051266.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163155006.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163209884.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164254419.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164306088.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164315172.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164807639.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228165935164.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228165949628.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170212541.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170533691.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170546608.png">
+<meta property="og:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170611991.png">
+<meta property="article:published_time" content="2021-02-27T16:43:14.000Z">
+<meta property="article:modified_time" content="2021-02-28T10:11:23.710Z">
+<meta property="article:author" content="Max">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dongrongyu.github.io/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005024994.png">
+
+<link rel="canonical" href="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis设计与实现-单机数据库的实现 | Max's BigHouse</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Max's BigHouse</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学有所依</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Max's BigHouse">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis设计与实现-单机数据库的实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-28 00:43:14 / 修改时间：18:11:23" itemprop="dateCreated datePublished" datetime="2021-02-28T00:43:14+08:00">2021-02-28</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisServer</span> &#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  redisDb *db;   <span class="comment">// 一个数组, 保存服务器中的所有数据库</span></span><br><span class="line">  <span class="keyword">int</span> dbnum;     <span class="comment">// 服务器的数据库数量, 默认16. 初始化时, 根据创建dbnum个数据库</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisClient</span> &#123;</span></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	redisDb *db;   <span class="comment">// 记录客户端正在使用的数据库</span></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125; redisClient;</span><br></pre></td></tr></table></figure>
+<p>SELECT命令: 显示的切换到一个数据库. 在执行FLUSHDB这样的危险命令前最好SELECT到需要执行FLUSHDB的目标数据库</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005024994.png" alt="image-20210228005024994"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisDb</span> &#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  dict *dict;   <span class="comment">// 数据库键空间, 是一个字典, 保存着数据库中的所有键值对</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125; redisDb;</span><br></pre></td></tr></table></figure>
+<p>键值对: 键+值</p>
+<ul>
+<li>键: 字符串对象</li>
+<li>值: 字符串对象, 列表对象, 哈希表对象, 集合对象, 有序集合对象, 这些对象中的任一类型</li>
+</ul>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005612084.png" alt="image-20210228005612084"></p>
+<h2 id="读写键空间的维护操作"><a href="#读写键空间的维护操作" class="headerlink" title="读写键空间的维护操作"></a>读写键空间的维护操作</h2><p>更新键空间的hit, miss次数. INFO status</p>
+<p>更新键LRU</p>
+<p>读取键时发现键过期, 则会先删除过期键再执行其他操作.</p>
+<p>标记dirty: 如果有客户端WATCH某个键, 则修改后会标记dirty</p>
+<p>增加dirty counter: 每次修改一个键后, 都会对脏键计数器的值增1</p>
+<p>修改操作发送数据库通知: 开启了数据库通知时, 服务器将按配置发送相应的数据库通知</p>
+<h2 id="设置键的生存时间或过期时间"><a href="#设置键的生存时间或过期时间" class="headerlink" title="设置键的生存时间或过期时间"></a>设置键的生存时间或过期时间</h2><p>服务器会自动删除生存时间TTL为0的键</p>
+<p>设置过期时间方式, 这几个命令底层都是使用PEXPIREAT命令实现的:</p>
+<ul>
+<li><p>EXPIRE, PEXPIRE: 以s或者ms为精度为某个键设置TTL, 相对时间, 多长时间之后</p>
+</li>
+<li><p>EXPIREAT, PEXPIREAT: 以s或者ms设置过期时间戳</p>
+</li>
+</ul>
+<p>TTL, PTTL: 返回键的剩余TTL</p>
+<p>PERSIST: 移除一个键的过期时间</p>
+<h2 id="保存过期时间"><a href="#保存过期时间" class="headerlink" title="保存过期时间"></a>保存过期时间</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisDb</span> &#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  dict *expire;   <span class="comment">// expire字典保存了数据库中所有键的过期时间</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125; redisDb;</span><br></pre></td></tr></table></figure>
+<p>expire的键值对:</p>
+<ul>
+<li>键是一个指针, 指向某个数据库键对象 (和键空间字典的键指向同一个键对象)</li>
+<li>值是一个long long类型的整数, 保存了数据库键的过期时间戳</li>
+</ul>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228011531391.png" alt="image-20210228011531391"></p>
+<h2 id="过期删除策略"><a href="#过期删除策略" class="headerlink" title="过期删除策略"></a>过期删除策略</h2><h3 id="三种删除策略"><a href="#三种删除策略" class="headerlink" title="三种删除策略"></a>三种删除策略</h3><ul>
+<li>定时删除: 设置过期时间同时设置定时器, 在键过期时立即删除<ul>
+<li>需要创建定时器, Redis时间事件采用无需链表, 查找时间复杂度O(N), 效率差</li>
+<li>对内存友好, 对CPU不友好</li>
+</ul>
+</li>
+<li>惰性删除: 每次从键空间获取键时, 检查是否过期, 过期则删除<ul>
+<li>对CPU友好, 对内存不友好</li>
+</ul>
+</li>
+<li>定期删除: 每隔一段时间, 对数据库进行一次检查, 删除全部或部分过期键<ul>
+<li>定期执行, 并限制删除操作执行的时长和频率</li>
+<li>难点在于执行时长和频率的设置</li>
+</ul>
+</li>
+</ul>
+<p>Redis结合使用了惰性删除和定期删除</p>
+<h3 id="惰性删除流程"><a href="#惰性删除流程" class="headerlink" title="惰性删除流程"></a>惰性删除流程</h3><p>epireIfNeeded函数: 如果键过期则将键从数据库中删除</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228160950463.png" alt="image-20210228160950463"></p>
+<h3 id="定期删除策略流程"><a href="#定期删除策略流程" class="headerlink" title="定期删除策略流程"></a>定期删除策略流程</h3><p>每次运行, 都从一定数量的数据库中取出一定数量的随机键 (DEFAULT_KEY_NUMBERS) 进行检查, 并删除其中的过期键</p>
+<p>current_db会记录当前activeExpireCycle函数检查的进度, 并在下一次activeExpireCycle函数调用时, 接着上一次的进度进行处理. 本次在10号db返回, 下次从11号db开始</p>
+<p>所有数据库都检查过一遍后, current_db = 0, 开始新一轮的检查</p>
+<h2 id="AOF-RDB和复制功能对过期键的处理"><a href="#AOF-RDB和复制功能对过期键的处理" class="headerlink" title="AOF, RDB和复制功能对过期键的处理"></a>AOF, RDB和复制功能对过期键的处理</h2><h3 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h3><p>保存RDB:</p>
+<ul>
+<li>已过期的键不会保存到RDB文件中</li>
+</ul>
+<p>载入RDB:</p>
+<ul>
+<li>主服务模式, 过期键不会被载入</li>
+<li>从服务器模式, 过期键会被载入</li>
+</ul>
+<h4 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h4><p>AOF文件写入: 过期键被惰性删除或定期删除后, 程序想AOF文件append一条DEL记录, 显示记录该键已被删除</p>
+<p>AOF重写: 已过期的键不保存到重写的AOF文件</p>
+<h4 id="复制-从服务器"><a href="#复制-从服务器" class="headerlink" title="复制 (从服务器)"></a>复制 (从服务器)</h4><p>只有收到主服务器的DEL命令才删除, 否则过期也不删除.</p>
+<p>如果客户端请求过期键, 从服务器还是会返回客户端结果</p>
+<h2 id="通知"><a href="#通知" class="headerlink" title="通知"></a>通知</h2><p>客户端可以对某个数据库中的特定键进行订阅, 获取该键的执行情况 (SET, EXPIRE, DEL等)</p>
+<p>类型:</p>
+<ul>
+<li><p>键空间通知: 某个键执行了什么命令</p>
+<ul>
+<li><p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163051266.png" alt="image-20210228163051266"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163155006.png" alt="image-20210228163155006"></p>
+</li>
+</ul>
+</li>
+<li><p>键事件通知: 某个操作被什么键执行了</p>
+<ul>
+<li><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163209884.png" alt="image-20210228163209884"></li>
+</ul>
+</li>
+</ul>
+<p>notify-keyspace-events选项决定了服务器所发送通知的类型:</p>
+<ul>
+<li>AKE: 所有类型键空间通知和键事件通知</li>
+<li>AK: 所有类型键空间通知</li>
+<li>AE: 所有类型键事件通知</li>
+<li>K$: 字符串键键空间通知</li>
+<li>EI: 列表键键事件通知</li>
+</ul>
+<h3 id="发送通知"><a href="#发送通知" class="headerlink" title="发送通知"></a>发送通知</h3><p>由notify.c/notifyKeyspaceEvent函数实现</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// event: 事件名称, key: 产生事件的键, dbid: 数据库号码</span></span><br><span class="line"><span class="comment">// type: 通知类型, REDIS_NOTIFY_SET集合键通知, REDIS_NOTIFY_GENERIC通用类型通知</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">notifyKeyspaceEvent</span><span class="params">(<span class="keyword">int</span> type, <span class="keyword">char</span> *event, robj *key, <span class="keyword">int</span> dbid)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>通知例子:</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164254419.png" alt="image-20210228164254419"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164306088.png" alt="image-20210228164306088"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164315172.png" alt="image-20210228164315172"></p>
+<h4 id="通知函数的实现"><a href="#通知函数的实现" class="headerlink" title="通知函数的实现"></a>通知函数的实现</h4><ol>
+<li>给定通知类型是否是服务器允许发送的类型server.notify_keyspace_events, 不是则直接返回</li>
+<li>是否允许发送键空间通知, 允许则发送</li>
+<li>是否允许发送键事件通知, 允许则发送</li>
+</ol>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164807639.png" alt="image-20210228164807639"></p>
+<h1 id="RDB持久化"><a href="#RDB持久化" class="headerlink" title="RDB持久化"></a>RDB持久化</h1><p>RDB文件创建</p>
+<ul>
+<li>SAVE: 同步生成RDB文件, Redis服务器进程阻塞</li>
+<li>BGSAVE: 派生一个子进程异步创建RDB文件, Redis服务器进程继续处理请求<ul>
+<li>BGSAVE执行过程中, BGREWRITEAOF命令会被延迟到BGSAVE完成后执行</li>
+<li>BGREWRITEAOF执行过程中, BGSAVE会被拒绝</li>
+</ul>
+</li>
+</ul>
+<p>RDB文件载入: 在启动时载入, 无特定命令</p>
+<p>AOF更新频率比RDB高, 所以只有在关闭AOF时才使用RDB还原数据库</p>
+<h2 id="自动间隔性保存"><a href="#自动间隔性保存" class="headerlink" title="自动间隔性保存"></a>自动间隔性保存</h2><h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228165935164.png" alt="image-20210228165935164"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228165949628.png" alt="image-20210228165949628"></p>
+<h3 id="保存条件"><a href="#保存条件" class="headerlink" title="保存条件"></a>保存条件</h3><p>设置保存条件, 任意一条被满足就会触发:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1        &#x2F;&#x2F; 服务器在900s内, 对数据库进行了至少1次修改</span><br><span class="line">save 300 10</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure>
+<p>dirty计数器: 距离上一次成功执行SAVE或BGSAVE后, 进行了多少次修改</p>
+<p>lastsave: 上一次成功执行SAVE或BGSAVE的时间戳</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170212541.png" alt="image-20210228170212541"></p>
+<h3 id="检查条件是否满足"><a href="#检查条件是否满足" class="headerlink" title="检查条件是否满足"></a>检查条件是否满足</h3><p>serverCron默认100ms执行一次, 其中一项工作是检查save的条件是否满足</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170533691.png" alt="image-20210228170533691"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170546608.png" alt="image-20210228170546608"></p>
+<h2 id="RDB文件结构"><a href="#RDB文件结构" class="headerlink" title="RDB文件结构"></a>RDB文件结构</h2><p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170611991.png" alt="image-20210228170611991"></p>
+<p>REDIS: 固定REDIS这5个字符</p>
+<p>db_version: 版本, 0006</p>
+<p>databases: 0个或任意多个数据, 及库中的键值对</p>
+<p>EOF: 1字节, 标识结束</p>
+<p>check_sum: 对前4个部分计算的校验和</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/19/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1/" rel="prev" title="Redis涉及与实现 - 数据结构与对象">
+      <i class="fa fa-chevron-left"></i> Redis涉及与实现 - 数据结构与对象
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/02/%E7%AC%AC5%E7%AB%A0-%E8%B0%83%E4%BC%98%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90%E4%B8%8E%E5%AE%9E%E6%88%98/" rel="next" title="第5章-调优案例分析与实战">
+      第5章-调优案例分析与实战 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%94%AE%E7%A9%BA%E9%97%B4%E7%9A%84%E7%BB%B4%E6%8A%A4%E6%93%8D%E4%BD%9C"><span class="nav-number">1.1.</span> <span class="nav-text">读写键空间的维护操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E9%94%AE%E7%9A%84%E7%94%9F%E5%AD%98%E6%97%B6%E9%97%B4%E6%88%96%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4"><span class="nav-number">1.2.</span> <span class="nav-text">设置键的生存时间或过期时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%9D%E5%AD%98%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4"><span class="nav-number">1.3.</span> <span class="nav-text">保存过期时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">过期删除策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.1.</span> <span class="nav-text">三种删除策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%83%B0%E6%80%A7%E5%88%A0%E9%99%A4%E6%B5%81%E7%A8%8B"><span class="nav-number">1.4.2.</span> <span class="nav-text">惰性删除流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E6%B5%81%E7%A8%8B"><span class="nav-number">1.4.3.</span> <span class="nav-text">定期删除策略流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF-RDB%E5%92%8C%E5%A4%8D%E5%88%B6%E5%8A%9F%E8%83%BD%E5%AF%B9%E8%BF%87%E6%9C%9F%E9%94%AE%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">AOF, RDB和复制功能对过期键的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB"><span class="nav-number">1.5.1.</span> <span class="nav-text">RDB</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AOF"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">AOF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6-%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">复制 (从服务器)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E7%9F%A5"><span class="nav-number">1.6.</span> <span class="nav-text">通知</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E9%80%9A%E7%9F%A5"><span class="nav-number">1.6.1.</span> <span class="nav-text">发送通知</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E7%9F%A5%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.6.1.1.</span> <span class="nav-text">通知函数的实现</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RDB%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">RDB持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E9%97%B4%E9%9A%94%E6%80%A7%E4%BF%9D%E5%AD%98"><span class="nav-number">2.1.</span> <span class="nav-text">自动间隔性保存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.1.</span> <span class="nav-text">结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%9D%E5%AD%98%E6%9D%A1%E4%BB%B6"><span class="nav-number">2.1.2.</span> <span class="nav-text">保存条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E6%9D%A1%E4%BB%B6%E6%98%AF%E5%90%A6%E6%BB%A1%E8%B6%B3"><span class="nav-number">2.1.3.</span> <span class="nav-text">检查条件是否满足</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">RDB文件结构</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Max"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Max</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dongrongyu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dongrongyu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:rongyu.dong@gmail.com" title="E-Mail → mailto:rongyu.dong@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Max</span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '3nDJCTt3PoQ9qeabywtgL5qQ-gzGzoHsz',
+      appKey     : 'HMGLSYCgLRuL0Tst8VMocAfj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

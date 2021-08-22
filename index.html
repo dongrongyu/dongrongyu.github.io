@@ -161,10 +161,289 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2021/03/02/%E7%AC%AC5%E7%AB%A0-%E8%B0%83%E4%BC%98%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90%E4%B8%8E%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Max's BigHouse">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/02/%E7%AC%AC5%E7%AB%A0-%E8%B0%83%E4%BC%98%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90%E4%B8%8E%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">第5章-调优案例分析与实战</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-02 15:18:28" itemprop="dateCreated datePublished" datetime="2021-03-02T15:18:28+08:00">2021-03-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-03 11:28:08" itemprop="dateModified" datetime="2021-03-03T11:28:08+08:00">2021-03-03</time>
+              </span>
+
+          
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h1><h2 id="大内存硬件上程序部署策略"><a href="#大内存硬件上程序部署策略" class="headerlink" title="大内存硬件上程序部署策略"></a>大内存硬件上程序部署策略</h2><p>部署方式:</p>
+<ul>
+<li>一个单独的Java虚拟机实例管理大量Java堆内存</li>
+<li>同时使用若干个Java虚拟机, 建立逻辑集群利用硬件资源</li>
+</ul>
+<h3 id="单个虚拟机实例"><a href="#单个虚拟机实例" class="headerlink" title="单个虚拟机实例"></a>单个虚拟机实例</h3><p>合理写代码, 尽量避免Full GC</p>
+<p>面临问题:</p>
+<ul>
+<li>回收大块堆内存导致长时间停顿. 采用增量回收, G1, ZGC, Shenandoah</li>
+<li>大内存必须使用64位Java虚拟机. 由于压缩至真, 处理器缓存行容量等因素, 性能低于32位虚拟机</li>
+<li>应用必须稳定, 避免使用期间Full GC</li>
+<li>相同程序在64位虚拟机占用空间更大 (压缩指针缓解)</li>
+</ul>
+<h3 id="逻辑集群方式部署"><a href="#逻辑集群方式部署" class="headerlink" title="逻辑集群方式部署"></a>逻辑集群方式部署</h3><p>在一台物理机器上启动多个应用服务器进程, 为每个服务器进程分配不同端口, 然后在前端搭建一个负载均衡器,以反向代理的方式来分配访问请求</p>
+<p>面临问题:</p>
+<ul>
+<li>节点竞争全局资源, 如磁盘文件竞争</li>
+<li>难高效利用资源池, 如连接池, 有些空闲有些繁忙</li>
+<li>使用32位虚拟机的话, 收到内存限制</li>
+<li>使用本地缓存的话, 内存浪费, 数据被缓存多份</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Max's BigHouse">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">Redis设计与实现-单机数据库的实现</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-28 00:43:14 / 修改时间：18:11:23" itemprop="dateCreated datePublished" datetime="2021-02-28T00:43:14+08:00">2021-02-28</time>
+            </span>
+
+          
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisServer</span> &#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  redisDb *db;   <span class="comment">// 一个数组, 保存服务器中的所有数据库</span></span><br><span class="line">  <span class="keyword">int</span> dbnum;     <span class="comment">// 服务器的数据库数量, 默认16. 初始化时, 根据创建dbnum个数据库</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisClient</span> &#123;</span></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	redisDb *db;   <span class="comment">// 记录客户端正在使用的数据库</span></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125; redisClient;</span><br></pre></td></tr></table></figure>
+<p>SELECT命令: 显示的切换到一个数据库. 在执行FLUSHDB这样的危险命令前最好SELECT到需要执行FLUSHDB的目标数据库</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005024994.png" alt="image-20210228005024994"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisDb</span> &#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  dict *dict;   <span class="comment">// 数据库键空间, 是一个字典, 保存着数据库中的所有键值对</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125; redisDb;</span><br></pre></td></tr></table></figure>
+<p>键值对: 键+值</p>
+<ul>
+<li>键: 字符串对象</li>
+<li>值: 字符串对象, 列表对象, 哈希表对象, 集合对象, 有序集合对象, 这些对象中的任一类型</li>
+</ul>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005612084.png" alt="image-20210228005612084"></p>
+<h2 id="读写键空间的维护操作"><a href="#读写键空间的维护操作" class="headerlink" title="读写键空间的维护操作"></a>读写键空间的维护操作</h2><p>更新键空间的hit, miss次数. INFO status</p>
+<p>更新键LRU</p>
+<p>读取键时发现键过期, 则会先删除过期键再执行其他操作.</p>
+<p>标记dirty: 如果有客户端WATCH某个键, 则修改后会标记dirty</p>
+<p>增加dirty counter: 每次修改一个键后, 都会对脏键计数器的值增1</p>
+<p>修改操作发送数据库通知: 开启了数据库通知时, 服务器将按配置发送相应的数据库通知</p>
+<h2 id="设置键的生存时间或过期时间"><a href="#设置键的生存时间或过期时间" class="headerlink" title="设置键的生存时间或过期时间"></a>设置键的生存时间或过期时间</h2><p>服务器会自动删除生存时间TTL为0的键</p>
+<p>设置过期时间方式, 这几个命令底层都是使用PEXPIREAT命令实现的:</p>
+<ul>
+<li><p>EXPIRE, PEXPIRE: 以s或者ms为精度为某个键设置TTL, 相对时间, 多长时间之后</p>
+</li>
+<li><p>EXPIREAT, PEXPIREAT: 以s或者ms设置过期时间戳</p>
+</li>
+</ul>
+<p>TTL, PTTL: 返回键的剩余TTL</p>
+<p>PERSIST: 移除一个键的过期时间</p>
+<h2 id="保存过期时间"><a href="#保存过期时间" class="headerlink" title="保存过期时间"></a>保存过期时间</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisDb</span> &#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  dict *expire;   <span class="comment">// expire字典保存了数据库中所有键的过期时间</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125; redisDb;</span><br></pre></td></tr></table></figure>
+<p>expire的键值对:</p>
+<ul>
+<li>键是一个指针, 指向某个数据库键对象 (和键空间字典的键指向同一个键对象)</li>
+<li>值是一个long long类型的整数, 保存了数据库键的过期时间戳</li>
+</ul>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228011531391.png" alt="image-20210228011531391"></p>
+<h2 id="过期删除策略"><a href="#过期删除策略" class="headerlink" title="过期删除策略"></a>过期删除策略</h2><h3 id="三种删除策略"><a href="#三种删除策略" class="headerlink" title="三种删除策略"></a>三种删除策略</h3><ul>
+<li>定时删除: 设置过期时间同时设置定时器, 在键过期时立即删除<ul>
+<li>需要创建定时器, Redis时间事件采用无需链表, 查找时间复杂度O(N), 效率差</li>
+<li>对内存友好, 对CPU不友好</li>
+</ul>
+</li>
+<li>惰性删除: 每次从键空间获取键时, 检查是否过期, 过期则删除<ul>
+<li>对CPU友好, 对内存不友好</li>
+</ul>
+</li>
+<li>定期删除: 每隔一段时间, 对数据库进行一次检查, 删除全部或部分过期键<ul>
+<li>定期执行, 并限制删除操作执行的时长和频率</li>
+<li>难点在于执行时长和频率的设置</li>
+</ul>
+</li>
+</ul>
+<p>Redis结合使用了惰性删除和定期删除</p>
+<h3 id="惰性删除流程"><a href="#惰性删除流程" class="headerlink" title="惰性删除流程"></a>惰性删除流程</h3><p>epireIfNeeded函数: 如果键过期则将键从数据库中删除</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228160950463.png" alt="image-20210228160950463"></p>
+<h3 id="定期删除策略流程"><a href="#定期删除策略流程" class="headerlink" title="定期删除策略流程"></a>定期删除策略流程</h3><p>每次运行, 都从一定数量的数据库中取出一定数量的随机键 (DEFAULT_KEY_NUMBERS) 进行检查, 并删除其中的过期键</p>
+<p>current_db会记录当前activeExpireCycle函数检查的进度, 并在下一次activeExpireCycle函数调用时, 接着上一次的进度进行处理. 本次在10号db返回, 下次从11号db开始</p>
+<p>所有数据库都检查过一遍后, current_db = 0, 开始新一轮的检查</p>
+<h2 id="AOF-RDB和复制功能对过期键的处理"><a href="#AOF-RDB和复制功能对过期键的处理" class="headerlink" title="AOF, RDB和复制功能对过期键的处理"></a>AOF, RDB和复制功能对过期键的处理</h2><h3 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h3><p>保存RDB:</p>
+<ul>
+<li>已过期的键不会保存到RDB文件中</li>
+</ul>
+<p>载入RDB:</p>
+<ul>
+<li>主服务模式, 过期键不会被载入</li>
+<li>从服务器模式, 过期键会被载入</li>
+</ul>
+<h4 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h4><p>AOF文件写入: 过期键被惰性删除或定期删除后, 程序想AOF文件append一条DEL记录, 显示记录该键已被删除</p>
+<p>AOF重写: 已过期的键不保存到重写的AOF文件</p>
+<h4 id="复制-从服务器"><a href="#复制-从服务器" class="headerlink" title="复制 (从服务器)"></a>复制 (从服务器)</h4><p>只有收到主服务器的DEL命令才删除, 否则过期也不删除.</p>
+<p>如果客户端请求过期键, 从服务器还是会返回客户端结果</p>
+<h2 id="通知"><a href="#通知" class="headerlink" title="通知"></a>通知</h2><p>客户端可以对某个数据库中的特定键进行订阅, 获取该键的执行情况 (SET, EXPIRE, DEL等)</p>
+<p>类型:</p>
+<ul>
+<li><p>键空间通知: 某个键执行了什么命令</p>
+<ul>
+<li><p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163051266.png" alt="image-20210228163051266"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163155006.png" alt="image-20210228163155006"></p>
+</li>
+</ul>
+</li>
+<li><p>键事件通知: 某个操作被什么键执行了</p>
+<ul>
+<li><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228163209884.png" alt="image-20210228163209884"></li>
+</ul>
+</li>
+</ul>
+<p>notify-keyspace-events选项决定了服务器所发送通知的类型:</p>
+<ul>
+<li>AKE: 所有类型键空间通知和键事件通知</li>
+<li>AK: 所有类型键空间通知</li>
+<li>AE: 所有类型键事件通知</li>
+<li>K$: 字符串键键空间通知</li>
+<li>EI: 列表键键事件通知</li>
+</ul>
+<h3 id="发送通知"><a href="#发送通知" class="headerlink" title="发送通知"></a>发送通知</h3><p>由notify.c/notifyKeyspaceEvent函数实现</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// event: 事件名称, key: 产生事件的键, dbid: 数据库号码</span></span><br><span class="line"><span class="comment">// type: 通知类型, REDIS_NOTIFY_SET集合键通知, REDIS_NOTIFY_GENERIC通用类型通知</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">notifyKeyspaceEvent</span><span class="params">(<span class="keyword">int</span> type, <span class="keyword">char</span> *event, robj *key, <span class="keyword">int</span> dbid)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>通知例子:</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164254419.png" alt="image-20210228164254419"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164306088.png" alt="image-20210228164306088"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164315172.png" alt="image-20210228164315172"></p>
+<h4 id="通知函数的实现"><a href="#通知函数的实现" class="headerlink" title="通知函数的实现"></a>通知函数的实现</h4><ol>
+<li>给定通知类型是否是服务器允许发送的类型server.notify_keyspace_events, 不是则直接返回</li>
+<li>是否允许发送键空间通知, 允许则发送</li>
+<li>是否允许发送键事件通知, 允许则发送</li>
+</ol>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228164807639.png" alt="image-20210228164807639"></p>
+<h1 id="RDB持久化"><a href="#RDB持久化" class="headerlink" title="RDB持久化"></a>RDB持久化</h1><p>RDB文件创建</p>
+<ul>
+<li>SAVE: 同步生成RDB文件, Redis服务器进程阻塞</li>
+<li>BGSAVE: 派生一个子进程异步创建RDB文件, Redis服务器进程继续处理请求<ul>
+<li>BGSAVE执行过程中, BGREWRITEAOF命令会被延迟到BGSAVE完成后执行</li>
+<li>BGREWRITEAOF执行过程中, BGSAVE会被拒绝</li>
+</ul>
+</li>
+</ul>
+<p>RDB文件载入: 在启动时载入, 无特定命令</p>
+<p>AOF更新频率比RDB高, 所以只有在关闭AOF时才使用RDB还原数据库</p>
+<h2 id="自动间隔性保存"><a href="#自动间隔性保存" class="headerlink" title="自动间隔性保存"></a>自动间隔性保存</h2><h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228165935164.png" alt="image-20210228165935164"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228165949628.png" alt="image-20210228165949628"></p>
+<h3 id="保存条件"><a href="#保存条件" class="headerlink" title="保存条件"></a>保存条件</h3><p>设置保存条件, 任意一条被满足就会触发:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1        &#x2F;&#x2F; 服务器在900s内, 对数据库进行了至少1次修改</span><br><span class="line">save 300 10</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure>
+<p>dirty计数器: 距离上一次成功执行SAVE或BGSAVE后, 进行了多少次修改</p>
+<p>lastsave: 上一次成功执行SAVE或BGSAVE的时间戳</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170212541.png" alt="image-20210228170212541"></p>
+<h3 id="检查条件是否满足"><a href="#检查条件是否满足" class="headerlink" title="检查条件是否满足"></a>检查条件是否满足</h3><p>serverCron默认100ms执行一次, 其中一项工作是检查save的条件是否满足</p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170533691.png" alt="image-20210228170533691"></p>
+<p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170546608.png" alt="image-20210228170546608"></p>
+<h2 id="RDB文件结构"><a href="#RDB文件结构" class="headerlink" title="RDB文件结构"></a>RDB文件结构</h2><p><img src="/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170611991.png" alt="image-20210228170611991"></p>
+<p>REDIS: 固定REDIS这5个字符</p>
+<p>db_version: 版本, 0006</p>
+<p>databases: 0个或任意多个数据, 及库中的键值对</p>
+<p>EOF: 1字节, 标识结束</p>
+<p>check_sum: 对前4个部分计算的校验和</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2021/02/19/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -581,7 +860,7 @@
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/11/23/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-Chapter-11-14/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -729,7 +1008,7 @@
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/11/09/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-Chapter-8-10/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -870,7 +1149,7 @@
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/10/26/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-Chapter-1-7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -1003,7 +1282,7 @@
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/10/20/%E7%AC%AC4%E7%AB%A0-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7%E3%80%81%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86%E5%B7%A5%E5%85%B7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -1023,10 +1302,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-10-20 22:26:55 / 修改时间：22:44:43" itemprop="dateCreated datePublished" datetime="2020-10-20T22:26:55+08:00">2020-10-20</time>
+              <time title="创建时间：2020-10-20 22:26:55" itemprop="dateCreated datePublished" datetime="2020-10-20T22:26:55+08:00">2020-10-20</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-02 15:17:45" itemprop="dateModified" datetime="2021-03-02T15:17:45+08:00">2021-03-02</time>
+              </span>
 
           
   
@@ -1046,7 +1331,27 @@
 <p>JHSDB: JDK 9, 之前可以通过sa-jdi.jar包引入</p>
 <p>VisualVM: JDK 6 Update 7, 已经从JDK中剥离, 但仍可以免费下载、使用</p>
 <p>Java Mission Control: JDK 7 Update 40开始随JDK发布, JDK 11转入OpenJDK管理, 需要结合HotSpot Java Flight Recorder (JFR, 收费), 所以是OracleJDK商业特性</p>
-<h2 id="JHSDB"><a href="#JHSDB" class="headerlink" title="JHSDB"></a>JHSDB</h2>
+<h2 id="JHSDB"><a href="#JHSDB" class="headerlink" title="JHSDB"></a>JHSDB</h2><p>jhsdb hsdb –pid 11180    // 启动jhsdb</p>
+<p>scanoops 0x00007f32c7800000 0x00007f32c7b50000 JHSDB_TestCase$ObjectHolder       // 查找虚地址范围内JHSDB_TestCase$ObjectHolder实例的地址</p>
+<p>revptrs 0x00007f32c7a7c458     // 搜索引用该地址的对象实例</p>
+<h2 id="JConsole"><a href="#JConsole" class="headerlink" title="JConsole"></a>JConsole</h2><p>基于JMX (Java Management Extensions) 的可视化监视, 管理工具, 通过JMX的MBean (Managed Bean) 对系统进行信息收集和参数动态调整. 运用于虚拟机或虚拟机之上的软件中.</p>
+<p>提供内存 jstat, 线程 jstak 的执行数据</p>
+<h2 id="VisualVM"><a href="#VisualVM" class="headerlink" title="VisualVM"></a>VisualVM</h2><p>运行监视, 故障处理, 性能分析 (Profiling)</p>
+<p><img src="/%E7%AC%AC4%E7%AB%A0-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7%E3%80%81%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86%E5%B7%A5%E5%85%B7/image-20210302150653905.png" alt="image-20210302150653905"></p>
+<p>主要插件:</p>
+<ul>
+<li>Btrace动态日志跟踪: 不中断目标程序前提下, 动态加入原本并不存在的调试代码<ul>
+<li>基于Java虚拟机的Instrument (是Java Virtual Machine Interface, JVMTI的重要组件)开发, 提供了一整套Agent机制.</li>
+<li>阿里的Arthas也是基于Instrument实现了类似的功能</li>
+</ul>
+</li>
+</ul>
+<h2 id="Java-Mission-Control"><a href="#Java-Mission-Control" class="headerlink" title="Java Mission Control"></a>Java Mission Control</h2><p>可持续在线监控工具, 展示虚拟机MBean和JFR的数据</p>
+<p>结合JFR (一套内建在HotSpot虚拟机的监控和基于时间的信息搜集框架, 过程式收集)使用, 采用JMX协议通信.</p>
+<h1 id="Hotspot虚拟机插件及工具"><a href="#Hotspot虚拟机插件及工具" class="headerlink" title="Hotspot虚拟机插件及工具"></a>Hotspot虚拟机插件及工具</h1><p>Ideal Graph Visualizer, Client Compiler Visualizer, MakeDeps, Project Creator, LogCompilation, HSDIS</p>
+<h2 id="HSDIS"><a href="#HSDIS" class="headerlink" title="HSDIS"></a>HSDIS</h2><p>HotSpot虚拟机即使编译代码反汇编插件</p>
+<p>搭配JITWatch, 对程序执行过程反汇编, 展示汇编代码, 字节码, 反汇编java代码</p>
+
       
     </div>
 
@@ -1068,7 +1373,7 @@
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/09/22/%E7%AC%AC3%E7%AB%A0-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -1096,7 +1401,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-09 13:55:22" itemprop="dateModified" datetime="2021-02-09T13:55:22+08:00">2021-02-09</time>
+                <time title="修改时间：2021-03-02 00:05:31" itemprop="dateModified" datetime="2021-03-02T00:05:31+08:00">2021-03-02</time>
               </span>
 
           
@@ -1129,7 +1434,7 @@
 <li>反应Java虚拟机内部情况的JMXBean、JVMTI中注册的回调、本地代码缓存等</li>
 <li>根据垃圾收集器的不同, 还有其他对象“临时性”的加入. 如针对Java堆的某一块区域的垃圾收集需要考虑是否与其他区域关联 (记忆集)</li>
 </ul>
-<h2 id="再谈引用"><a href="#再谈引用" class="headerlink" title="再谈引用"></a>再谈引用</h2><p>强引用String Reference: 代码中存在的引用关系, 即Object obj = new Object(), 垃圾收集器永远不会收集强引用对象</p>
+<h2 id="再谈引用"><a href="#再谈引用" class="headerlink" title="再谈引用"></a>再谈引用</h2><p>强引用Strong Reference: 代码中存在的引用关系, 即Object obj = new Object(), 垃圾收集器永远不会收集强引用对象</p>
 <p>软引用SoftReference: 系统要发生溢出异常前会将这些对象列进回收范围进行回收, 如果还没有足够空间才会抛出内存溢出异常. SoftReference来实现</p>
 <p>弱引用WeakReference: 只能生存到下一次垃圾收集发生. WeakReference类来实现</p>
 <p>虚引用: 不对对象生存时间构成影响, 只为了在对象被收集时得到一个系统通知. PhantomReference类来实现</p>
@@ -1190,7 +1495,7 @@
 </ul>
 <h2 id="标记-复制算法"><a href="#标记-复制算法" class="headerlink" title="标记-复制算法"></a>标记-复制算法</h2><p>解决标记-清除算法存在的问题</p>
 <p>将内存区域划分为相等的两块, GC时将存活的对象复制到另一块半区, 同时清理之前用的半区</p>
-<p>改算法被主流的商用Java虚拟机新生代GC采用</p>
+<p>该算法被主流的商用Java虚拟机新生代GC采用</p>
 <p>Appel式回收 (Andrew Appel 1989年提出) 的Hotspot实现:</p>
 <ul>
 <li>一个Eden区+两个Survivor区</li>
@@ -1213,7 +1518,7 @@
 <p>一些垃圾收集器可能会结合使用Mark-Sweep和Mark-Compact</p>
 <h1 id="HotSpot算法细节实现"><a href="#HotSpot算法细节实现" class="headerlink" title="HotSpot算法细节实现"></a>HotSpot算法细节实现</h1><h2 id="根结点枚举"><a href="#根结点枚举" class="headerlink" title="根结点枚举"></a>根结点枚举</h2><p>GC Roots节点主要为全局性引用 (常量或类静态属性)与执行上下文(栈帧的本地变量表)</p>
 <p>根结点枚举的过程必须暂停用户线程</p>
-<p>虚拟机其实并不需要一个不漏的从方法区等GC Roots获取哪些地方存放着对象引用的, 虚拟机是可以直接得到哪些地方存放着对象引用的. HotSpot通过OopMap (Ordinary Object Pointer)记录, 在类加载动作完成, 会把对象什么偏移量上是什么类型的数据计算出来, 即使是即使编译, 也会在某个位置记录下栈里和寄存器哪些位置是引用.</p>
+<p>虚拟机其实并不需要一个不漏的从方法区等GC Roots获取哪些地方存放着对象引用的, 虚拟机是可以直接得到哪些地方存放着对象引用的. HotSpot通过OopMap (Ordinary Object Pointer)记录, 在类加载动作完成, 会把对象什么偏移量上是什么类型的数据计算出来, 即使是即时编译, 也会在某个位置记录下栈里和寄存器哪些位置是引用.</p>
 <p>???不太懂</p>
 <p><img src="/2020/09/22/%E7%AC%AC3%E7%AB%A0-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/image-20200928195908139.png" alt="image-20200928195908139"></p>
 <p>OopMap是针对指令的数据结构, 会为某条特定位置的指令生成</p>
@@ -1367,6 +1672,7 @@
 </ul>
 </li>
 </ul>
+<p><img src="/2020/09/22/%E7%AC%AC3%E7%AB%A0-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/image-20210301212011316.png" alt="image-20210301212011316"></p>
 <p>G1收集器对内存任何部分组成的回收集Collection Set (CSet) 来进行回收, 不再针对分代, 而是哪块内存的垃圾数量多, 回收收益最大</p>
 <p>G1对扮演不同角色的Region采用不同的策略去处理</p>
 <p>G1是一个“<strong>停顿时间模型</strong>”的收集器</p>
@@ -1381,7 +1687,7 @@
 <ul>
 <li>跨Region的引用对象如何解决: <ul>
 <li>每个region维护自己的记忆集, 这些记忆集记录别的region指向自己的卡页范围.</li>
-<li>记忆集的实现通过一个哈希表, Key是别的Region的起始地址, Value是一个集合, 里面存储的元素是卡表的索引号.</li>
+<li>G1记忆集的实现通过一个哈希表, Key是别的Region的起始地址, Value是一个集合, 里面存储的元素是卡表的索引号.</li>
 <li>Region数量比传统分代数量多的多, G1至少要耗费Java堆容量的10%~20%额外内存来维持收集器工作</li>
 </ul>
 </li>
@@ -1474,7 +1780,7 @@
 <p>基于引用访问屏障 Load reference Barrier:</p>
 <ul>
 <li>为了减少读屏障对访问带来的问题, 计划在JDK 13中引入</li>
-<li>只拦截对象中数据类型为引用类型的读写操作, 而不去管原声数据类型等其他非引用字段的读写</li>
+<li>只拦截对象中数据类型为引用类型的读写操作, 而不去管原生数据类型等其他非引用字段的读写</li>
 </ul>
 <h2 id="ZGC收集器"><a href="#ZGC收集器" class="headerlink" title="ZGC收集器"></a>ZGC收集器</h2><p>PGC和G4收集器的继承者</p>
 <p>ZGC特征:</p>
@@ -1488,11 +1794,11 @@
 <ul>
 <li>Small Region: 2MB, 放置&lt;256KB的小对象</li>
 <li>Medium Region: 32MB, 放置&gt;=256KB但&lt;4MB的对象</li>
-<li>Large Region: 容量动态变化, 为2MB的整数倍. 放置4MB及以上的<u>一个</u>大对象 (所以large region可能小雨medium region). 由于拷贝开销大, Large region在ZGC中不会被重分配</li>
+<li>Large Region: 容量动态变化, 为2MB的整数倍. 放置4MB及以上的<u>一个</u>大对象 (所以large region可能小于medium region). 由于拷贝开销大, Large region在ZGC中不会被重分配</li>
 </ul>
 <p><img src="/2020/09/22/%E7%AC%AC3%E7%AB%A0-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/image-20201019182007284.png" alt="image-20201019182007284"></p>
 <h3 id="染色指针-Colored-Pointer、Tag-Pointer、Version-Pointer"><a href="#染色指针-Colored-Pointer、Tag-Pointer、Version-Pointer" class="headerlink" title="染色指针 (Colored Pointer、Tag Pointer、Version Pointer)"></a>染色指针 (Colored Pointer、Tag Pointer、Version Pointer)</h3><p>在对象引用上记录信息的一项技术</p>
-<p>64位系统 -&gt; AMD架构只支持48位虚地址空间 -&gt; 64位Linux支持47位需地址空间和46位物理地址空间</p>
+<p>64位系统 -&gt; AMD架构只支持48位虚地址空间 -&gt; 64位Linux支持47位虚地址空间和46位物理地址空间</p>
 <p>46位地址空间仍然过剩, 所以取高4位来存储四个标志信息:</p>
 <ul>
 <li>对象三色标记状态</li>
@@ -1529,7 +1835,7 @@
 <h3 id="优劣势"><a href="#优劣势" class="headerlink" title="优劣势"></a>优劣势</h3><p>没有使用记忆集、分代, 因此不需要写屏障, 但GC时间长, 能承受的对象分配速率不会太高 (解决该问题的根本方法是分代收集, 针对新生代进行更频繁、更快的收集)</p>
 <p>NUMA-aware的内存分配. 在ZGA之前只有Parallel Scavenge支持NUMA-aware内存分配</p>
 <p>GC过程低延迟, 吞吐量也比较高能达到Parallel Scavenge的90% (根据图3-23结果)</p>
-<h1 id="选择合适的垃圾收集器"><a href="#选择合适的垃圾收集器" class="headerlink" title="选择合适的垃圾收集器"></a>选择合适的垃圾收集器</h1><h2 id="Epsilon收集器"><a href="#Epsilon收集器" class="headerlink" title="Epsilon收集器"></a>Epsilon收集器</h2><p>JDK 10开始, 为了隔离垃圾收集器堉Java虚拟机解释、编译、监控等子系统的关系, RedHat提出了垃圾收集的统一接口, Epsilon是这个接口的有效性验证和参考实现</p>
+<h1 id="选择合适的垃圾收集器"><a href="#选择合适的垃圾收集器" class="headerlink" title="选择合适的垃圾收集器"></a>选择合适的垃圾收集器</h1><h2 id="Epsilon收集器"><a href="#Epsilon收集器" class="headerlink" title="Epsilon收集器"></a>Epsilon收集器</h2><p>JDK 10开始, 为了隔离垃圾收集器与Java虚拟机解释、编译、监控等子系统的关系, RedHat提出了垃圾收集的统一接口, Epsilon是这个接口的有效性验证和参考实现</p>
 <p>不干活的收集器</p>
 <p>用于剥离垃圾收集器影响的性能测试和压力测试</p>
 <p>用于不需要垃圾收集就会推出的极小应用</p>
@@ -1541,13 +1847,7 @@
 <h2 id="对象优先在Eden区分配"><a href="#对象优先在Eden区分配" class="headerlink" title="对象优先在Eden区分配"></a>对象优先在Eden区分配</h2><h2 id="大对象直接进入老年代"><a href="#大对象直接进入老年代" class="headerlink" title="大对象直接进入老年代"></a>大对象直接进入老年代</h2><p>-XX:PretenureSizeThreshold, 指定大于该设置值的对象直接在老年代分配</p>
 <h2 id="长期存活的对象将进入老年代"><a href="#长期存活的对象将进入老年代" class="headerlink" title="长期存活的对象将进入老年代"></a>长期存活的对象将进入老年代</h2><p>-XX:MaxTenuringThreshold, 对象晋升老年代的年龄阈值</p>
 <h2 id="动态对象年龄判定"><a href="#动态对象年龄判定" class="headerlink" title="动态对象年龄判定"></a>动态对象年龄判定</h2><p>如果在Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半, 年龄大于或等于该年龄的对象就可以直接进入老年代</p>
-<h2 id="空间分配担保"><a href="#空间分配担保" class="headerlink" title="空间分配担保"></a>空间分配担保</h2><p>发生Minor GC前, 先检查老年代最大可用的连续空间是否大于新生代所有对象总空间</p>
-<p>​    条件成立, 这一次Minor GC是安全的</p>
-<p>​    条件不成立, 查看-XX:HandlePromotionFailure参数设置值是否允许担保失败</p>
-<p>​        允许, 检查老年代最大可用连续空间是否大于历次晋升到老年代对象的平均大小</p>
-<p>​            成立, 尝试一次Minor GC, 此次Minor GC有风险</p>
-<p>​            不成立, 进行Full GC</p>
-<p>​        不允许, 可进行Full GC</p>
+<h2 id="空间分配担保"><a href="#空间分配担保" class="headerlink" title="空间分配担保"></a>空间分配担保</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">发生Minor GC前, 先检查老年代最大可用的连续空间是否大于新生代所有对象总空间</span><br><span class="line"></span><br><span class="line">	条件成立, 这一次Minor GC是安全的</span><br><span class="line"></span><br><span class="line">	条件不成立, 查看-XX:HandlePromotionFailure参数设置值是否允许担保失败</span><br><span class="line"></span><br><span class="line">		允许, 检查老年代最大可用连续空间是否大于历次晋升到老年代对象的平均大小</span><br><span class="line"></span><br><span class="line">			成立, 尝试一次Minor GC, 此次Minor GC有风险</span><br><span class="line"></span><br><span class="line">			不成立, 进行Full GC</span><br><span class="line"></span><br><span class="line">		不允许, 可进行Full GC</span><br></pre></td></tr></table></figure>
 <p>JDK 6 Update 24之后-XX:HandlePromotionFailure不再使用, 规则变为只要老年代连续空间大于新生代对象总大小或历次晋升的平均大小, 就会进行Minor GC, 否则进行Full GC</p>
 
       
@@ -1571,7 +1871,7 @@
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/09/17/%E7%AC%AC2%E7%AB%A0-Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8E%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E5%BC%82%E5%B8%B8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -1599,7 +1899,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-20 22:27:43" itemprop="dateModified" datetime="2020-10-20T22:27:43+08:00">2020-10-20</time>
+                <time title="修改时间：2021-03-01 00:34:29" itemprop="dateModified" datetime="2021-03-01T00:34:29+08:00">2021-03-01</time>
               </span>
 
           
@@ -1616,7 +1916,7 @@
 
       
           <h1 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h1><p><img src="/%E7%AC%AC2%E7%AB%A0-Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8E%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E5%BC%82%E5%B8%B8/image-20200917004816840.png" alt="image-20200917004816840"></p>
-<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>线程私有, 一块较小的区域, 可以看作当前县城所执行的字节码的行号指示器.</p>
+<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>线程私有, 一块较小的区域, 可以看作当前线程所执行的字节码的行号指示器.</p>
 <p>如果是一个Java方法, 则记录正在执行的虚拟机字节码指令的地址</p>
 <p>如果是Native方法, 则值为Undefined</p>
 <p> 没有规定OutOfMemory Error情况的区域</p>
@@ -1674,7 +1974,7 @@
 <li><img src="/%E7%AC%AC2%E7%AB%A0-Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8E%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E5%BC%82%E5%B8%B8/image-20200919171229126.png" alt="image-20200919171229126"></li>
 </ul>
 </li>
-<li>类型指针, 指向类型元数据的指针</li>
+<li>类型指针, 指向类型元数据的指针 (对象属于哪个类)</li>
 </ul>
 <p>实例数据Instance Data: </p>
 <ul>
@@ -1766,7 +2066,7 @@
     <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/09/05/Java-Note/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Max">
       <meta itemprop="description" content="">
     </span>
@@ -1847,310 +2147,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Max">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Max's BigHouse">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/" class="post-title-link" itemprop="url">第五章-创建高性能的索引</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-03 10:08:55" itemprop="dateCreated datePublished" datetime="2020-09-03T10:08:55+08:00">2020-09-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-19 22:58:58" itemprop="dateModified" datetime="2021-02-19T22:58:58+08:00">2021-02-19</time>
-              </span>
-
-          
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="索引基础"><a href="#索引基础" class="headerlink" title="索引基础"></a>索引基础</h1><h2 id="索引的类型"><a href="#索引的类型" class="headerlink" title="索引的类型"></a>索引的类型</h2><p>索引在存储引擎层实现</p>
-<h3 id="B-Tree索引"><a href="#B-Tree索引" class="headerlink" title="B-Tree索引"></a>B-Tree索引</h3><p>单列索引:</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200903234444724.png" alt="image-20200903234444724"></p>
-<p>多列索引:</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200903234519761.png" alt="image-20200903234519761"></p>
-<p>索引查询原则:</p>
-<ul>
-<li>最左前缀匹配, 从索引定义的最左列开始, 可使用全部或部分列的索引</li>
-<li>如果某个列有范围查询, 则其右边的列都无法使用索引</li>
-</ul>
-<h3 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h3><p>只有Memory引擎支持哈希索引, 也是Memory的默认索引类型.</p>
-<h4 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h4><ul>
-<li>只包含索引值和行指针, 不能用索引值避免读取行</li>
-<li>无法用于排序</li>
-<li>哈希索引对所有索引列进行hash, 必须使用部分列查索引</li>
-<li>只支持=、IN()、&lt;=&gt;, 不支持范围查询</li>
-<li>冲突小时查询很快, 冲突严重时查询和删除很慢</li>
-</ul>
-<p>InnoDB在某些索引值操作频繁时会自发的在B-Tree索引上再创建一个哈希索引 (只是将key进行hash缩短键值, 还是使用B-Tree查找)</p>
-<h4 id="不支持哈希索引的存储引擎伪hash索引的实现"><a href="#不支持哈希索引的存储引擎伪hash索引的实现" class="headerlink" title="不支持哈希索引的存储引擎伪hash索引的实现"></a>不支持哈希索引的存储引擎伪hash索引的实现</h4><p>如 (mysql会选择url_crc列):     为什么将长键转为短键能缩短搜索空间???</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200906234559019.png" alt="image-20200906234559019"></p>
-<p>对于url_crc列可定义触发器进行维护</p>
-<p>WHERE条件需要包含原来的列, 用于处理哈希冲突</p>
-<h3 id="空间数据索引-R-Tree"><a href="#空间数据索引-R-Tree" class="headerlink" title="空间数据索引 (R-Tree)"></a>空间数据索引 (R-Tree)</h3><p>用于地理数据索引, 不需要前缀查询, 可以利用任意维度来查询</p>
-<p>MyISAM支持</p>
-<p>PostgreSQL和PostGIS数据库做的较好</p>
-<h3 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h3><p>对全文的关键词匹配, 和基于值匹配的B-Tree索引不冲突</p>
-<p>适用于MATCH AGAINST操作</p>
-<h1 id="索引的优点"><a href="#索引的优点" class="headerlink" title="索引的优点"></a>索引的优点</h1><p>三个优点:</p>
-<ul>
-<li>减少扫描的数据量</li>
-<li>避免排序和临时表</li>
-<li>随机IO变为顺序IO</li>
-</ul>
-<p>tips:</p>
-<ul>
-<li>小表全盘扫更高效</li>
-<li>中到大型的表用索引很有效</li>
-<li>特大表见索引代价高, 考虑分区</li>
-<li>表的数量太多, 考虑元数据信息表</li>
-</ul>
-<h1 id="高性能的索引策略"><a href="#高性能的索引策略" class="headerlink" title="高性能的索引策略"></a>高性能的索引策略</h1><h3 id="独立的列"><a href="#独立的列" class="headerlink" title="独立的列"></a>独立的列</h3><p>索引列不能是表达式的一部分,  也不能是函数的参数</p>
-<h3 id="前缀索引和索引选择性"><a href="#前缀索引和索引选择性" class="headerlink" title="前缀索引和索引选择性"></a>前缀索引和索引选择性</h3><p>完整列的选择性: SELECT COUNT(DISTINCT city)/COUNT(*) FROM sakila.city_demo;</p>
-<p>通常前缀索引的长度应尽量接近完整列的选择性</p>
-<p>此外还需要考虑前缀索引每个类型的区分性</p>
-<p>前缀索引无法做ORDER BY和GROUP BY</p>
-<p>不需要修改表结构</p>
-<p>后缀索引可以将字符串反转存储后建立前缀索引 (借助触发器自动触发)</p>
-<p>前缀索引创建: ALTER TABLE sakila.city_demo ADD KEY (city(7));</p>
-<h3 id="多列索引"><a href="#多列索引" class="headerlink" title="多列索引"></a>多列索引</h3><p>多个单列的索引在查询条件中使用时, MySQL可能会对OR和AND条件使用UNION和INTERSECTION优化</p>
-<p>如下使用了actor_id和film_id两个单列索引, 使用了两个索引扫描的联合:</p>
-<p>EXPLAIN SELECT film_id, actor_id FROM sakila.film_actor WHERE actor_id=1 OR film_id=1 \G</p>
-<p>Tips:</p>
-<ul>
-<li>INTERSECTION的存在通常意味着需要联合索引</li>
-<li>OR操作往往会合并返回大量数据, 占用大量CPU和内存资源</li>
-<li>优化器更在意随机页面读取, 通常会低估查询成本. 使用多列索引消耗更多CPU和内存资源且可能影响并发性. 通常不如直接改写成UNION方式更好</li>
-<li>optimizer_switch可便宜关闭索引合并功能</li>
-<li>IGNORE INDEX提示优化器忽略掉某些索引</li>
-</ul>
-<h3 id="选择合适的索引列顺序"><a href="#选择合适的索引列顺序" class="headerlink" title="选择合适的索引列顺序"></a>选择合适的索引列顺序</h3><p>不考虑排序和分组时, 通常考虑将选择性最高的列放在前面</p>
-<p>通过多个列的选择性考虑联合索引的顺序 (经验法则):</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200907233137554.png" alt="image-20200907233137554"></p>
-<h3 id="聚簇索引"><a href="#聚簇索引" class="headerlink" title="聚簇索引"></a>聚簇索引</h3><p>数据行和键值紧凑的存储在一起, 一个表只能有一个聚簇索引</p>
-<p>InnoDB的聚簇索引:</p>
-<ul>
-<li>默认主键为聚簇索引</li>
-<li>如果没有主键, 会选择一个唯一的非空索引</li>
-<li>如果没有这样的索引, 会隐式定义一个逐渐作为聚簇索引</li>
-</ul>
-<p>InnoDB只聚集同一个页面的记录, 包含相邻键值的页面可能相聚甚远</p>
-<p>优点:</p>
-<ul>
-<li>相关的数据存储在一起. 如根据用户ID为聚簇索引, 该用户的所有邮件只用很少磁盘IO</li>
-<li>数据和索引一起存储, 查找快</li>
-<li>使用覆盖索引扫描的查询可以直接使用页节点中的主键值 ???</li>
-</ul>
-<p>缺点:</p>
-<ul>
-<li>数据量少能放在内存中时, 聚簇索引没什么优势</li>
-<li>如果不是按索引顺序插入数据, 可以用OPTIMIZE TABLE重新组织一下表</li>
-<li>更新聚簇索引代价高, 被更新的行会被移动到新的位置</li>
-<li>插入新行或更新主键会导致“页分裂”问题, 占用更多磁盘</li>
-<li>行稀疏或数据存储不连续时, 全表扫描慢</li>
-<li>二级索引会存储主键列, 且需要两次查找 (至少)</li>
-</ul>
-<p>InnoDB自适应的哈希索引能减少二级索引的多次查找???</p>
-<h4 id="InnoDB和MyISAM的数据分布对比"><a href="#InnoDB和MyISAM的数据分布对比" class="headerlink" title="InnoDB和MyISAM的数据分布对比"></a>InnoDB和MyISAM的数据分布对比</h4><p>InnoDB主键为聚簇索引, 其他索引为存储主键的二级索引</p>
-<p>MyISAM中主键索引和二级索引都存储数据的行号</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200909002342125.png" alt="image-20200909002342125"></p>
-<h4 id="在InnoDB表中按主键顺序插入行"><a href="#在InnoDB表中按主键顺序插入行" class="headerlink" title="在InnoDB表中按主键顺序插入行"></a>在InnoDB表中按主键顺序插入行</h4><p>向聚簇索引顺序插入行:</p>
-<ul>
-<li>新插入的row被顺序写入到磁盘</li>
-<li>高并发情况下造成间隙锁竞争</li>
-<li>高并发情况下AUTO_INCREMENT锁的影响, 可以调节innodb_autoinc_lock_mode参数改善(ref: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/JiangLe/p/6362770.html">https://www.cnblogs.com/JiangLe/p/6362770.html</a>)</li>
-</ul>
-<p>向基簇索引插入乱序的行:</p>
-<ul>
-<li>目标页可能不在磁盘中, 加载会造成许多随机IO</li>
-<li>乱序写入有频繁页分裂, 分配新的空间, 一次插入最少需要修改三个页</li>
-<li>页分裂使得页变得稀疏, 存在碎片</li>
-</ul>
-<h4 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h4><p>MySQL利用索引列直接获取列数据, 这样就不再需要回表查询读取数据行.</p>
-<p>EXPLAIN的EXTRA: using index为使用了覆盖索引</p>
-<p>优势:</p>
-<ul>
-<li>索引比数据行小, 只读取索引能大大减少数据访问量</li>
-<li>索引按顺序存储 (至少单页内), 随机IO比读取数据行少</li>
-<li>一些存储引擎如MyISAM只缓存索引, 数据则依赖操作系统缓存, 每次访问数据需要一次系统调用, 开销大</li>
-<li>InnoDB二级索引中保存了主键值, 可以覆盖对于主键的查询</li>
-</ul>
-<p>MySQL能在索引中做最左前缀的LIKE比较, 但对于%开头的比较就无法利用索引</p>
-<h4 id="使用索引扫描做排序"><a href="#使用索引扫描做排序" class="headerlink" title="使用索引扫描做排序"></a>使用索引扫描做排序</h4><p>使用索引排序的情况:</p>
-<ul>
-<li>索引的列顺序和ORDER BY子句的顺序完全一致, 并且所有列的排序方向都一样时</li>
-<li>ORDER BY子句要求和WHERE的要求一样, 满足索引最左前缀要求. 前导列在WHERE或JOIN子句中指定了常量时, 可以不满足最左前缀要求</li>
-<li>需要多表关联时, 只有当ORDER BY子句引用的字段都为第一个表时, 才能用索引做排序. (依赖优化器使用哪张表作为第一张表)</li>
-</ul>
-<p>EXPLAIN的type: index为使用索引做排序</p>
-<p>tips:</p>
-<ul>
-<li>如果不同列需要按不同方向做排序, 可以将存储该列值进行反转串或相反数</li>
-</ul>
-<h4 id="压缩-前缀压缩-索引"><a href="#压缩-前缀压缩-索引" class="headerlink" title="压缩(前缀压缩)索引"></a>压缩(前缀压缩)索引</h4><p>MyISAM使用前缀压缩来减少索引大小, 让更多的索引可以放入内存. 默认值只压缩字符串, 通过参数设置页可以对整数做压缩</p>
-<p>MyISAM对行指针也采用类似的前缀压缩方式</p>
-<p>索引压缩的方法: </p>
-<ul>
-<li>先完全保存索引块中第一个值, 然后将其他值和第一个值进行比较得到相同前缀的字节数和剩余的不同后缀部分</li>
-<li>如: 索引快第一个值为“perform”, 第二个值是“performace”, 第二个值采用“7,ance”这样的形式</li>
-</ul>
-<p>优劣:</p>
-<ul>
-<li>IO密集型应用, 对有些查询带来的好处比成本多很多</li>
-<li>因为后一个索引值依赖前一个值, 所以ORDER BY DESC性能不好</li>
-<li>CPU密集型应用, 因为需要随机查找, 压缩索引在索引块内的查找是顺序扫描不是二分, 索引性能慢</li>
-</ul>
-<h4 id="冗余和重复索引"><a href="#冗余和重复索引" class="headerlink" title="冗余和重复索引"></a>冗余和重复索引</h4><p>尽量避免冗余和重复索引, 但由于联合索引占空间大, 所以有时为了加速不同query查询会存在冗余索引</p>
-<p>为什么前缀压缩的MyISAM使用索引(state_id, city, address)的情况下该语句查询效率比单列索引下降很多呢, 而InnoDB不会???</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200911002700063.png" alt="image-20200911002700063"></p>
-<p>分析表中冗余索引和重复索引的方法:</p>
-<ul>
-<li>复杂的访问INFORMATION_SCHEMA表的查询</li>
-<li>Sholomi Noach的common_schema中的一些视图定位, commom_schema是一系列安装到服务器上常用的存储和试图</li>
-<li>Percona Toolkit中的pt-duplicate-key-checker工具来检查</li>
-</ul>
-<h4 id="未使用的索引"><a href="#未使用的索引" class="headerlink" title="未使用的索引"></a>未使用的索引</h4><p>不使用索引的查询方式:</p>
-<ul>
-<li>Percona Server或MariaDB先打开userstates服务器变量 (默认关闭), 查询INFORMATION_SCHEMA.INDEX_STATISTICS查询每个索引的使用频率</li>
-<li>Percona Toolkit中的pt-index-usage分析未使用的索引, 并定位质量差的查询, 结果可卸乳MySQL的表中</li>
-</ul>
-<h4 id="索引和锁"><a href="#索引和锁" class="headerlink" title="索引和锁"></a>索引和锁</h4><p>查询会先通过存储引擎索引过滤返回, 对于索引无法过滤的数据, 存储引擎返回后通过MySQL服务器WHERE子句过滤</p>
-<p>如果不使用索引, InnoDB会做全表扫描锁住所有的行</p>
-<p>如下例子InnoDB锁定1<del>4行, 但实际上只返回了2</del>4</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200915235347340.png" alt="image-20200915235347340"></p>
-<p>InnoDB二级索引使用共享锁, 主键索引使用排他锁. 所以获取写锁的时候无法使用覆盖索引</p>
-<h2 id="索引案例学习"><a href="#索引案例学习" class="headerlink" title="索引案例学习"></a>索引案例学习</h2><h3 id="支持多种过滤条件"><a href="#支持多种过滤条件" class="headerlink" title="支持多种过滤条件"></a>支持多种过滤条件</h3><p>为了更多使用索引, 创建索引时范围查询应该尽量放在后面, 比如age</p>
-<p>有些选择性低但又经常使用到的列可以放在多列索引前面, 如sex、country, 即使在不需要条件SEX的时候也可以通过SEX IN (‘m’, ‘f’) 来使用该多列索引</p>
-<p>IN查询能使用索引, MySQL优化器会转化成=进行组合, 如下查询就有4x3x2=24种组合</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200916102912749.png" alt="image-20200916102912749"></p>
-<h3 id="避免多个范围条件"><a href="#避免多个范围条件" class="headerlink" title="避免多个范围条件"></a>避免多个范围条件</h3><p>范围查询会使得右侧的索引失效, 所以一个查询种范围查询应该尽量少.</p>
-<p>可以考虑如何优化查询替代存在多个范围条件的问题, 如下查询可以通过新增active列替代过去几周上线过的用户条件(last_online), 该字段通过定时任务去维护</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200917002440338.png" alt="image-20200917002440338"></p>
-<p>tips: EXPLAIN不能分辨范围查询和IN查询, 都会显示type为range, 但是这两种查询的访问效率是不同的</p>
-<h3 id="优化排序"><a href="#优化排序" class="headerlink" title="优化排序"></a>优化排序</h3><p>数据集大的时候使用文件排序是很慢的</p>
-<p>即使有索引(sex, rating), limit偏移很大的查询也会很慢, 案例:</p>
-<p><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200917003431012.png" alt="image-20200917003431012"></p>
-<p>优化方法:</p>
-<ul>
-<li>反范式化、预先计算、缓存</li>
-<li>限制翻页数量</li>
-<li>延迟关联: 使用覆盖索引查询主键, 再根据这些主键获取需要的行<ul>
-<li><img src="/2020/09/03/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/image-20200917003658355.png" alt="image-20200917003658355"></li>
-<li>不懂这里为啥原查询不会直接先查主键再回表???</li>
-</ul>
-</li>
-</ul>
-<h2 id="维护索引和表"><a href="#维护索引和表" class="headerlink" title="维护索引和表"></a>维护索引和表</h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2020/09/01/test/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Max">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Max's BigHouse">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/01/test/" class="post-title-link" itemprop="url">test</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-09-01 01:07:38 / 修改时间：01:16:57" itemprop="dateCreated datePublished" datetime="2020-09-01T01:07:38+08:00">2020-09-01</time>
-            </span>
-
-          
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="/image-20200901011436208.png" alt="image-20200901011436208"></p>
-<p><img src="/image-20200901011636497.png" alt="image-20200901011636497"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2213,7 +2209,7 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Max"
-      src="/images/avatar.gif">
+      src="/images/avatar.png">
   <p class="site-author-name" itemprop="name">Max</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -2222,7 +2218,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
