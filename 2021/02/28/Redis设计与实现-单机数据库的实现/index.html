@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis设计与实现-单机数据库的实现">
 <meta property="og:url" content="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
-<meta property="og:site_name" content="Max&#39;s BigHouse">
+<meta property="og:site_name" content="Rongyu&#39;s BigHouse">
 <meta property="og:description" content="数据库123456struct redisServer &amp;#123;  &#x2F;&#x2F; ...  redisDb *db;   &#x2F;&#x2F; 一个数组, 保存服务器中的所有数据库  int dbnum;     &#x2F;&#x2F; 服务器的数据库数量, 默认16. 初始化时, 根据创建dbnum个数据库  &#x2F;&#x2F; ...&amp;#125; 12345typedef struct redisClient &amp;#123;	&#x2F;&#x2F; ...	red">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005024994.png">
@@ -45,8 +45,8 @@
 <meta property="og:image" content="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170546608.png">
 <meta property="og:image" content="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228170611991.png">
 <meta property="article:published_time" content="2021-02-27T16:43:14.000Z">
-<meta property="article:modified_time" content="2021-08-22T07:56:27.488Z">
-<meta property="article:author" content="Max">
+<meta property="article:modified_time" content="2021-08-22T07:56:27.000Z">
+<meta property="article:author" content="Rongyu">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://dongrongyu.github.io/2021/02/28/Redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0/image-20210228005024994.png">
@@ -64,7 +64,7 @@
   };
 </script>
 
-  <title>Redis设计与实现-单机数据库的实现 | Max's BigHouse</title>
+  <title>Redis设计与实现-单机数据库的实现 | Rongyu's BigHouse</title>
   
 
 
@@ -115,10 +115,10 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Max's BigHouse</h1>
+      <h1 class="site-title">Rongyu's BigHouse</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
-      <p class="site-subtitle" itemprop="description">学有所依</p>
+      <p class="site-subtitle" itemprop="description">Welcome</p>
   </div>
 
   <div class="site-nav-right">
@@ -189,12 +189,12 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Max">
+      <meta itemprop="name" content="Rongyu">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Max's BigHouse">
+      <meta itemprop="name" content="Rongyu's BigHouse">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -465,9 +465,9 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="Max"
+    <img class="site-author-image" itemprop="image" alt="Rongyu"
       src="/images/avatar.png">
-  <p class="site-author-name" itemprop="name">Max</p>
+  <p class="site-author-name" itemprop="name">Rongyu</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -475,14 +475,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -521,7 +521,7 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Max</span>
+  <span class="author" itemprop="copyrightHolder">Rongyu</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dongrongyu.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="简介10月份的面试已经结束有一段时间了，简单记录一下这次的面经。以下经验主要针对Java后端开发。 面试情况统计了一下这次面试总共面15家公司，第一周主要集中面中小厂，第二周面大厂。我的面试节奏很快，每周面试基本上排满，最多的时候一天5面。一开始想着投中小厂练手，但后来发现投太多了，面试真的很耗精力，还是建议大家可以直接投大厂，或者投一家小厂练手。 前期先拿一个offer很重要，会给自己增加面试信">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试总结">
+<meta property="og:url" content="https://dongrongyu.github.io/2021/12/23/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="Rongyu&#39;s BigHouse">
+<meta property="og:description" content="简介10月份的面试已经结束有一段时间了，简单记录一下这次的面经。以下经验主要针对Java后端开发。 面试情况统计了一下这次面试总共面15家公司，第一周主要集中面中小厂，第二周面大厂。我的面试节奏很快，每周面试基本上排满，最多的时候一天5面。一开始想着投中小厂练手，但后来发现投太多了，面试真的很耗精力，还是建议大家可以直接投大厂，或者投一家小厂练手。 前期先拿一个offer很重要，会给自己增加面试信">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://dongrongyu.github.io/2021/12/23/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/image-20211224001538045.png">
+<meta property="article:published_time" content="2021-12-23T13:39:32.000Z">
+<meta property="article:modified_time" content="2021-12-23T16:15:45.694Z">
+<meta property="article:author" content="Rongyu">
+<meta property="article:tag" content="职业发展">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dongrongyu.github.io/2021/12/23/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/image-20211224001538045.png">
+
+<link rel="canonical" href="https://dongrongyu.github.io/2021/12/23/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>面试总结 | Rongyu's BigHouse</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Rongyu's BigHouse</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Welcome</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dongrongyu.github.io/2021/12/23/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Rongyu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rongyu's BigHouse">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          面试总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-23 21:39:32" itemprop="dateCreated datePublished" datetime="2021-12-23T21:39:32+08:00">2021-12-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-24 00:15:45" itemprop="dateModified" datetime="2021-12-24T00:15:45+08:00">2021-12-24</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/23/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/23/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>10月份的面试已经结束有一段时间了，简单记录一下这次的面经。以下经验主要针对Java后端开发。</p>
+<h1 id="面试情况"><a href="#面试情况" class="headerlink" title="面试情况"></a>面试情况</h1><p>统计了一下这次面试总共面15家公司，第一周主要集中面中小厂，第二周面大厂。我的面试节奏很快，每周面试基本上排满，最多的时候一天5面。一开始想着投中小厂练手，但后来发现投太多了，面试真的很耗精力，还是建议大家可以直接投大厂，或者投一家小厂练手。</p>
+<p>前期先拿一个offer很重要，会给自己增加面试信心。如果没有offer的情况下，大厂可以直接要高，小厂想稳一手的话可以往低点要，小厂要高了可能直接不给发offer。</p>
+<p>大厂和小厂都会考察八股文和算法，大厂的八股问题通常更加深入，算法题也会相对偏和难一些，但总体还是力扣简单和中等难度。大厂还可能会考察系统设计题。外企比较特殊，主要看算法题，别的不是很看重。</p>
+<p>以下是自己各家的面试情况，供参考：</p>
+<p><img src="/2021/12/23/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/image-20211224001538045.png" alt="image-20211224001538045"></p>
+<h1 id="简历准备"><a href="#简历准备" class="headerlink" title="简历准备"></a>简历准备</h1><p>简历的准备是相当重要的，简历是你求职的门面，一方面是要体现你的优秀点确保过简历筛选关，另一方面是项目经历和技能要尽量和投递的岗位匹配，让面试官对你有兴趣。简历上主要的几块内容是教育背景、项目经历、个人技能。对面试官而言，最重要的是你的项目经历，其次是个人技能，这两块应该尽量和应聘岗位匹配。</p>
+<p>简历其实是你给面试官提前准备的考卷，准备简历的时候应该预想到上面的内容都有可能被问到。对于研发而言，项目工作上应该尽可能写你的技术点，面试官通常对你的业务实现不感兴趣，比如项目中用到哪些中间件，做了哪些优化，指标提升了多少。个人技能也是，写到简历上的需要好好准备，也可以引导面试官问一些问题，比如对GC有一定理解，那么面试官会主动跳到你的坑里来。</p>
+<p>对于简历的排版，每个人的审美标准不一样，我认为研发毕竟是做技术的，个人倾向于使用黑白简历，简历简单整洁就好了，内容不要过多，投国企可以用多页，投互联网内容最好控制在一页。这里分享一下我一直在用的简历模板，是个latex的简历模板，方便自己调整排版。</p>
+<p>模板：<a target="_blank" rel="noopener" href="https://github.com/billryan/resume/tree/zh_CN">https://github.com/billryan/resume/tree/zh_CN</a></p>
+<p>使用介绍：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzAwMjM3MTc5OA==&amp;mid=212258865&amp;idx=1&amp;sn=8ee6ccd56d86778e48207cedbb5fbfad&amp;3rd=MzA3MDU4NTYzMw==&amp;scene=6#rd%E3%80%82">https://mp.weixin.qq.com/s?__biz=MzAwMjM3MTc5OA==&amp;mid=212258865&amp;idx=1&amp;sn=8ee6ccd56d86778e48207cedbb5fbfad&amp;3rd=MzA3MDU4NTYzMw==&amp;scene=6#rd。</a></p>
+<h1 id="面试准备"><a href="#面试准备" class="headerlink" title="面试准备"></a>面试准备</h1><h2 id="自我介绍"><a href="#自我介绍" class="headerlink" title="自我介绍"></a>自我介绍</h2><p>自我介绍一般控制在5分钟内，主要聊下下面几点内容：</p>
+<ol>
+<li>教育背景</li>
+<li>工作经历和所属岗位</li>
+<li>简单引出主要项目</li>
+</ol>
+<h2 id="项目介绍"><a href="#项目介绍" class="headerlink" title="项目介绍"></a>项目介绍</h2><p>通常每面面试过程面试官会让挑选一个项目进行介绍，所以着重准备一个项目就好了，当然其他的也需要简单准备下。</p>
+<p>项目需要准备的几点：</p>
+<ol>
+<li>从产品层面介绍项目业务逻辑</li>
+<li>项目的挑战点、技术点</li>
+<li>项目用到的组件，最好了解一下组件的原理以及使用，比如常见的限流算法、缓存的设计模式等</li>
+</ol>
+<p>项目可能会问的问题：</p>
+<ul>
+<li>项目中有哪些技术困难点，是如何解决的？</li>
+<li>XXX的实现这样是不是足够好？有没有其他的解决方式？</li>
+</ul>
+<p>面试多了会发现其实对一份简历的项目问题能问的还是比较固定的，这部分自己想不到的可以找有经验的朋友帮忙看看，提前准备可能被问的问题。</p>
+<h2 id="专业知识"><a href="#专业知识" class="headerlink" title="专业知识"></a>专业知识</h2><p>工作3年内的工程师其实专业知识是主要考察点。</p>
+<p>推荐教程：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/">https://snailclimb.gitee.io/javaguide/#/</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/CyC2018/CS-Notes">https://github.com/CyC2018/CS-Notes</a></li>
+</ul>
+<h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><p>语言和常用中间件的知识需要熟背，包括Java、mysql、redis、es、mq，其他的还可能考察IO、ZK、RPC、设计模式、分布式协议。当然这也看你简历上的技术栈怎么写了。总结了一些常见题。</p>
+<p>Java：</p>
+<ul>
+<li>JVM内存模型</li>
+<li>各种容器的实现原理，ArrayList、HashMap等</li>
+<li>并发编程：Java线程池、ConcurrentHashMap原理、ThreadLocal、Atomic原子类、AQS</li>
+<li>垃圾收集器：G1、CMS</li>
+<li>内存泄露</li>
+<li>spring</li>
+<li>volatile关键字</li>
+<li>spring bean生命周期</li>
+<li>动态代理</li>
+<li>代码问题定位</li>
+</ul>
+<p>mysql：</p>
+<ul>
+<li>索引原理、联合索引、聚簇索引</li>
+<li>复制的同步模式</li>
+<li>MVCC</li>
+<li>redo、undo log</li>
+<li>数据库范式</li>
+<li>索引优化、explain看哪些指标</li>
+<li>为什么不能有过多字段</li>
+</ul>
+<p>redis：</p>
+<ul>
+<li>zset跳表原理，zrank和zscore复杂度</li>
+<li>主从同步原理</li>
+<li>大key问题解决方法</li>
+<li>脑裂问题</li>
+<li>问题定位：cpu过高原因、变慢原因等</li>
+</ul>
+<p>es：</p>
+<ul>
+<li>倒排索引实现原理</li>
+<li>近实时查询、写盘原理</li>
+<li>filter和query的区别</li>
+</ul>
+<p>mq：</p>
+<ul>
+<li>producer、consumer、brocker</li>
+<li>分区/队列</li>
+<li>如何保证不丢消息</li>
+<li>如何防止消息重复消费</li>
+<li>rocketMQ延迟消息的实现</li>
+</ul>
+<p>其他的：</p>
+<ul>
+<li>多路复用IO</li>
+<li>https的请求流程、对称加密和非对称加密、数字证书</li>
+<li>raft算法选举原理</li>
+</ul>
+<h3 id="算法题"><a href="#算法题" class="headerlink" title="算法题"></a>算法题</h3><p>算法题其实大家工作时候很少去刷，社招又不像校招，其实没有时间刷那么多题，主要刷一部分题来找到刷题的手感。</p>
+<p>刷题推荐两本书：剑指Offer、程序员代码面试指南。</p>
+<p>剑指Offer是必刷的一本书，程序员代码面试指南因为题目太多了，所以建议每次刷的时候记录一下错题，下次再刷的时候就可以减少复习量啦~因为算法题一次不会的，下次可能也还是不会hh。</p>
+<h3 id="系统设计"><a href="#系统设计" class="headerlink" title="系统设计"></a>系统设计</h3><p>系统设计题对我来说算是最难的一块，毕竟项目经验欠缺，而且日常工作中很少碰到复杂的系统设计。当然这块也有一些现成的方法论指导，提前准备准备，在问到的时候回答个五六成，基本上能满足对低年限招聘的需求。</p>
+<p>推荐书籍：</p>
+<ol>
+<li>Groking the system design interview</li>
+<li>数据密集型应用系统的设计</li>
+<li>微服务架构设计模式</li>
+<li>DDD</li>
+</ol>
+<p>这块没有提前准备，主要看了1的前面一部分，对临时抱佛脚还是很有帮助的。</p>
+<p>自己碰到过的一些系统设计题：</p>
+<ul>
+<li><p>秒杀系统</p>
+</li>
+<li><p>兑奖码发放系统的设计</p>
+</li>
+<li><p>短视频推荐已看过滤</p>
+</li>
+</ul>
+<h2 id="面试复盘"><a href="#面试复盘" class="headerlink" title="面试复盘"></a>面试复盘</h2><p>每一场面试都是对自己准备情况的考核，不会的和模棱两可的题都记录下来，下来看资料查漏补缺。你会发现，每场面试都有自己不会的问题。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在当前互联网大环境下换工作总是免不了的，重要的是前期做好充分准备，面试过程中保持良好心态，面试结束后及时复盘。</p>
+<p>出去面试也是对自己所学知识的查漏补缺，判断自己在市场的竞争力，我有朋友就是不换工作但偶尔出去面面试。</p>
+<p>最后，祝大家面试顺利，都拿到心仪的offer~</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%81%8C%E4%B8%9A%E5%8F%91%E5%B1%95/" rel="tag"># 职业发展</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/27/%E7%AC%AC6%E7%AB%A0-%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="prev" title="第6章-查询性能优化">
+      <i class="fa fa-chevron-left"></i> 第6章-查询性能优化
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E6%83%85%E5%86%B5"><span class="nav-number">2.</span> <span class="nav-text">面试情况</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E5%8E%86%E5%87%86%E5%A4%87"><span class="nav-number">3.</span> <span class="nav-text">简历准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%87"><span class="nav-number">4.</span> <span class="nav-text">面试准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E6%88%91%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.1.</span> <span class="nav-text">自我介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.2.</span> <span class="nav-text">项目介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%93%E4%B8%9A%E7%9F%A5%E8%AF%86"><span class="nav-number">4.3.</span> <span class="nav-text">专业知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">4.3.1.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E9%A2%98"><span class="nav-number">4.3.2.</span> <span class="nav-text">算法题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1"><span class="nav-number">4.3.3.</span> <span class="nav-text">系统设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E5%A4%8D%E7%9B%98"><span class="nav-number">4.4.</span> <span class="nav-text">面试复盘</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Rongyu"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Rongyu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dongrongyu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dongrongyu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:rongyu.dong@gmail.com" title="E-Mail → mailto:rongyu.dong@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rongyu</span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '3nDJCTt3PoQ9qeabywtgL5qQ-gzGzoHsz',
+      appKey     : 'HMGLSYCgLRuL0Tst8VMocAfj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
